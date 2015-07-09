@@ -280,6 +280,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
             #width = len(label) * COL_WIDTH_MULTIPLIER
             fieldWidths.append(width)
             sheet1.col(writeCol).width = width
+            sheet2.col(writeCol).width = width
             colCnt += 1
         # Title row
         # - has been removed to allow columns to be easily sorted post-export.
@@ -304,9 +305,9 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
         subheading = None
         for row in rows:
             # Item details
-            rowlimit = 11
+            rowLimit = 3
             rowCnt += 1
-            if rowCnt < rowlimit:
+            if rowCnt <= rowLimit:
                 currentRow = sheet1.row(rowCnt)
             else:
                 currentRow = sheet2.row(rowCnt - rowLimit)
@@ -319,13 +320,13 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
                 represent = s3_strip_markup(s3_unicode(row[report_groupby]))
                 if subheading != represent:
                     subheading = represent
-                    if rowCnt < rowlimit: #test case, needs to be set to actual row limit
+                    if rowCnt <= rowLimit: #test case, needs to be set to actual row limit
                         sheet1.write_merge(rowCnt, rowCnt, 0, totalCols,
                                        subheading, styleSubHeader)
                     else:
                         sheet2.write_merge(rowCnt - rowLimit, rowCnt - rowLimit, 0, totalCols, subheading, styleSubHeader)
                     rowCnt += 1
-                    if rowCnt < rowlimit:
+                    if rowCnt <= rowLimit:
                         currentRow = sheet1.row(rowCnt)
                     else:
                         currentRow = sheet2.row(rowCnt - rowLimit)
@@ -407,6 +408,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
                 if width > fieldWidths[colCnt]:
                     fieldWidths[colCnt] = width
                     sheet1.col(writeCol).width = width
+                    sheet2.col(writeCol).width = width
                 colCnt += 1
         sheet1.panes_frozen = True
         #sheet1.horz_split_pos = 3
