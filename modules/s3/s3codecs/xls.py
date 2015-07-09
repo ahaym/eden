@@ -211,7 +211,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
         if len(sheet_name) > 31:
             sheet_name = sheet_name[:31]
         sheet1 = book.add_sheet(sheet_name)
-        sheet2 = book.add_sheet(sheet_name + '2')
+        sheet2 = book.add_sheet(sheet_name + '_2')
 
         # Styles
         styleLargeHeader = xlwt.XFStyle()
@@ -275,7 +275,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
             else:
                 writeCol = colCnt
             headerRow.write(writeCol, str(label), styleHeader)
-            headerRow2.write(writCol, str(label), styleHeader)
+            headerRow2.write(writeCol, str(label), styleHeader)
             width = max(len(label) * COL_WIDTH_MULTIPLIER, 2000)
             #width = len(label) * COL_WIDTH_MULTIPLIER
             fieldWidths.append(width)
