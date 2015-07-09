@@ -211,6 +211,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
         if len(sheet_name) > 31:
             sheet_name = sheet_name[:31]
         sheet1 = book.add_sheet(sheet_name)
+        sheet2 = book.add_sheet(sheet_name + '2')
 
         # Styles
         styleLargeHeader = xlwt.XFStyle()
@@ -253,6 +254,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
         colCnt = 0
         #headerRow = sheet1.row(2)
         headerRow = sheet1.row(0)
+        headerRow2 = sheet2.row(0)
         fieldWidths = []
         id = False
         for selector in lfields:
@@ -273,6 +275,7 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
             else:
                 writeCol = colCnt
             headerRow.write(writeCol, str(label), styleHeader)
+            headerRow2.write(writCol, str(label), styleHeader)
             width = max(len(label) * COL_WIDTH_MULTIPLIER, 2000)
             #width = len(label) * COL_WIDTH_MULTIPLIER
             fieldWidths.append(width)
@@ -301,8 +304,12 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
         subheading = None
         for row in rows:
             # Item details
+            rowlimit = 11
             rowCnt += 1
-            currentRow = sheet1.row(rowCnt)
+            if rowCnt < rowlimit:
+                currentRow = sheet1.row(rowCnt)
+            else:
+                currentRow = sheet2.row(rowCnt - rowLimit)
             colCnt = 0
             if rowCnt % 2 == 0:
                 style = styleEven
@@ -312,10 +319,16 @@ List Fields %s""" % (request.url, len(headers), len(items[0]), headers, list_fie
                 represent = s3_strip_markup(s3_unicode(row[report_groupby]))
                 if subheading != represent:
                     subheading = represent
-                    sheet1.write_merge(rowCnt, rowCnt, 0, totalCols,
+                    if rowCnt < rowlimit: #test case, needs to be set to actual row limit
+                        sheet1.write_merge(rowCnt, rowCnt, 0, totalCols,
                                        subheading, styleSubHeader)
+                    else:
+                        sheet2.write_merge(rowCnt - rowLimit, rowCnt - rowLimit, 0, totalCols, subheading, styleSubHeader)
                     rowCnt += 1
-                    currentRow = sheet1.row(rowCnt)
+                    if rowCnt < rowlimit:
+                        currentRow = sheet1.row(rowCnt)
+                    else:
+                        currentRow = sheet2.row(rowCnt - rowLimit)
                     if rowCnt % 2 == 0:
                         style = styleEven
                     else:
